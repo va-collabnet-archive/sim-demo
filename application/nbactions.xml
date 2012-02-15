@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>debug</actionName>
+            <goals>
+                <goal>install</goal>
+                <goal>nbm:run-platform</goal>
+            </goals>
+            <properties>
+                <jpda.listen>true</jpda.listen>
+                <netbeans.run.params.ide>-J-Xdebug -J-Xrunjdwp:transport=dt_socket,suspend=n,server=n,address=${jpda.address} -J-Djava.library.path=/Library/Java/javafx-sdk2.1.0-beta/rt/bin -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
+            </properties>
+        </action>
+    </actions>
