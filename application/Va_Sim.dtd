@@ -1,0 +1,60 @@
+<?xml encoding="UTF-8"?>
+
+<!ELEMENT document (subjective,objective,assessment,plan)>
+<!ATTLIST document
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT subjective EMPTY>
+<!ATTLIST subjective
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT objective (assertion)+>
+<!ATTLIST objective
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT assessment EMPTY>
+<!ATTLIST assessment
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT plan EMPTY>
+<!ATTLIST plan
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT assertion (assertionUuid,pncs,discernable,qualifier,value)>
+<!ATTLIST assertion
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT assertionUuid (#PCDATA)>
+<!ATTLIST assertionUuid
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT pncs EMPTY>
+<!ATTLIST pncs
+  xmlns CDATA #FIXED ''
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED
+  value CDATA #REQUIRED>
+
+<!ELEMENT discernable (concept)>
+<!ATTLIST discernable
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT qualifier (concept)>
+<!ATTLIST qualifier
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT value (concept)>
+<!ATTLIST value
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT concept (rel)?>
+<!ATTLIST concept
+  xmlns CDATA #FIXED ''
+  desc CDATA #REQUIRED
+  sctid CDATA #REQUIRED>
+
+<!ELEMENT rel (concept)>
+<!ATTLIST rel
+  xmlns CDATA #FIXED ''
+  sctid CDATA #REQUIRED
+  type NMTOKEN #REQUIRED>
