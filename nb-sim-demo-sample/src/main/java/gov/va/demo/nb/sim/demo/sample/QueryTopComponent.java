@@ -18,7 +18,7 @@ autostore = false)
 @TopComponent.Description(preferredID = "QueryTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
-@TopComponent.Registration(mode = "editor", openAtStartup = true)
+@TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "gov.va.demo.nb.sim.demo.sample.QueryTopComponent")
 @ActionReference(path = "Menu/Window" /*
  * , position = 333

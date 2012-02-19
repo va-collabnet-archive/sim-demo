@@ -31,6 +31,7 @@ public class TreeHelper {
             TreeItem<ExpressionComponentBI> relItem = new TreeItem<ExpressionComponentBI>(rel);
             parentItem.getChildren().add(relItem);
             TreeItem<ExpressionComponentBI> destItem = new TreeItem<ExpressionComponentBI>(rel.getDestination());
+            relItem.getChildren().add(destItem);
             addChildren(destItem);
         }
     }

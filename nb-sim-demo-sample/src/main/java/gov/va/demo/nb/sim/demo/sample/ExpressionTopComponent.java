@@ -5,18 +5,16 @@
 package gov.va.demo.nb.sim.demo.sample;
 
 import gov.va.demo.dom.DomExpressionAdapter;
-import gov.va.demo.dom.DomTreeModelAdaptor;
 import gov.va.demo.expression.ExpressionManager;
+import gov.va.demo.fx.ExpressionTreeCell;
+import gov.va.demo.fx.TreeHelper;
 import gov.va.demo.nb.sim.jpa.Expressions;
 import gov.va.demo.nb.sim.jpa.JpaManager;
-import gov.va.demo.terminology.TerminologyService;
-import java.beans.PropertyVetoException;
+import gov.va.sim.act.expression.ExpressionComponentBI;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -24,16 +22,23 @@ import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import gov.va.sim.impl.expression.Expression;
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import javafx.application.Platform;
-import javafx.scene.Group;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.util.Callback;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.swing.tree.DefaultTreeModel;
+import javax.persistence.Query;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -45,7 +50,7 @@ autostore = false)
 @TopComponent.Description(preferredID = "ExpressionTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
-@TopComponent.Registration(mode = "editor", openAtStartup = true)
+@TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "gov.va.demo.nb.sim.demo.sample.ExpressionTopComponent")
 @ActionReference(path = "Menu/Window" /*
  * , position = 333
@@ -59,36 +64,52 @@ preferredID = "ExpressionTopComponent")
 })
 public final class ExpressionTopComponent extends TopComponent {
 
-    private DomTreeModelAdaptor adaptor;
     private Expression expression;
+    private File assertionDefFile;
+    private Document assertionDoc;
+
+    public File getAssertionDefFile() {
+        return assertionDefFile;
+    }
+
+    public void setAssertionDefFile(File assertionDefFile) {
+        this.assertionDefFile = assertionDefFile;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            assertionDoc = builder.parse(new FileInputStream(assertionDefFile));
+        } catch (ParserConfigurationException parserConfigurationException) {
+            Exceptions.printStackTrace(parserConfigurationException);
+        } catch (SAXException sAXException) {
+            Exceptions.printStackTrace(sAXException);
+        } catch (IOException iOException) {
+            Exceptions.printStackTrace(iOException);
+        }
+    }
 
     public ExpressionTopComponent() {
         initComponents();
         setName(Bundle.CTL_ExpressionTopComponent());
         setToolTipText(Bundle.HINT_ExpressionTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        expressionTree.setRootVisible(false);
-        expressionTree.setShowsRootHandles(true);
-        expressionTree.setModel(new DefaultTreeModel(null));
-        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) expressionTree.getCellRenderer();
-        renderer.setLeafIcon(null);
-        renderer.setOpenIcon(null);
-        renderer.setClosedIcon(null);
 
         Platform.runLater(new Runnable() {
+
             @Override
             public void run() {
-                Group root = new Group();
-                Scene s = new Scene(root, 300, 300, Color.BLACK);
+                try {
+                    URL resource = getClass().getResource("/gov/va/demo/nb/sim/demo/sample/ExpressionTree.fxml");
+                    Parent root = FXMLLoader.load(resource);
 
-                Rectangle r = new Rectangle(25,25,250,250);
-                r.setFill(Color.BLUE);
-                root.getChildren().add(r);
-                jFXPanel1.setScene(s);
+                    Scene s = new Scene(root);
+                    jFXPanel1.setScene(s);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             }
-       });
-        
-        
+        });
+
+
     }
 
     /**
@@ -101,18 +122,14 @@ public final class ExpressionTopComponent extends TopComponent {
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         processButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        expressionTree = new javax.swing.JTree();
         jScrollPane4 = new javax.swing.JScrollPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         expressionTextArea = new javax.swing.JTextArea();
-        checkExpressionTableButton = new javax.swing.JButton();
         checkElIndex = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         elConceptNid = new javax.swing.JTextField();
         expressionUuidTextField = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
+        inTableText = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         elConceptUuid = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
@@ -133,23 +150,12 @@ public final class ExpressionTopComponent extends TopComponent {
             }
         });
 
-        jScrollPane3.setViewportView(expressionTree);
-
-        jScrollPane2.setViewportView(jScrollPane3);
-
         expressionTextArea.setColumns(20);
         expressionTextArea.setLineWrap(true);
         expressionTextArea.setRows(5);
         jScrollPane1.setViewportView(expressionTextArea);
 
         jScrollPane4.setViewportView(jScrollPane1);
-
-        org.openide.awt.Mnemonics.setLocalizedText(checkExpressionTableButton, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.checkExpressionTableButton.text")); // NOI18N
-        checkExpressionTableButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkExpressionTableButtonActionPerformed(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(checkElIndex, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.checkElIndex.text")); // NOI18N
         checkElIndex.addActionListener(new java.awt.event.ActionListener() {
@@ -176,8 +182,8 @@ public final class ExpressionTopComponent extends TopComponent {
             }
         });
 
-        jTextField1.setEditable(false);
-        jTextField1.setText(org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.jTextField1.text")); // NOI18N
+        inTableText.setEditable(false);
+        inTableText.setText(org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.inTableText.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.jLabel3.text")); // NOI18N
 
@@ -192,15 +198,21 @@ public final class ExpressionTopComponent extends TopComponent {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.jLabel5.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(addToExpressionTableButton, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.addToExpressionTableButton.text")); // NOI18N
+        addToExpressionTableButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addToExpressionTableButtonActionPerformed(evt);
+            }
+        });
 
         jFXPanel1.setBackground(new java.awt.Color(255, 255, 0));
         jFXPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jFXPanel1.setMinimumSize(new java.awt.Dimension(257, 166));
 
         javax.swing.GroupLayout jFXPanel1Layout = new javax.swing.GroupLayout(jFXPanel1);
         jFXPanel1.setLayout(jFXPanel1Layout);
         jFXPanel1Layout.setHorizontalGroup(
             jFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 255, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jFXPanel1Layout.setVerticalGroup(
             jFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,44 +224,39 @@ public final class ExpressionTopComponent extends TopComponent {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(processButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(53, 53, 53)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(elConceptNid)
-                                    .addComponent(elConceptUuid)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(expressionUuidTextField))
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(checkExpressionTableButton)
-                                .addGap(18, 18, 18)
-                                .addComponent(addToExpressionTableButton, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(checkElIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(77, 77, 77)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 174, Short.MAX_VALUE))))
+                        .addGap(84, 84, 84)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inTableText))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel1)
+                                .addComponent(processButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel5)
+                                        .addComponent(jLabel2))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(elConceptUuid, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(elConceptNid, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(checkElIndex, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(20, 20, 20)
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(expressionUuidTextField))
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+                                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(addToExpressionTableButton))))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -261,23 +268,11 @@ public final class ExpressionTopComponent extends TopComponent {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(processButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(expressionUuidTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(49, 49, 49)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkExpressionTableButton)
-                    .addComponent(addToExpressionTableButton))
-                .addGap(7, 7, 7)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkElIndex)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(elConceptNid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -286,7 +281,15 @@ public final class ExpressionTopComponent extends TopComponent {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(elConceptUuid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(154, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkElIndex)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(inTableText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addToExpressionTableButton)
+                .addContainerGap(186, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -296,52 +299,35 @@ public final class ExpressionTopComponent extends TopComponent {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new ByteArrayInputStream(expressionText.getBytes("UTF-8")));
-            adaptor = new DomTreeModelAdaptor(doc);
-            expressionTree.setModel(adaptor.getTreeModel());
             expression = DomExpressionAdapter.convertToExpression(doc);
-
-            System.out.println("Expression: \n" + expression.getXml());
-            System.out.println("Expression verbose: \n" + expression.getVerboseXml());
-            System.out.println("Expression UUID: \n" + expression.getUuid().toString());
-            System.out.println("Expression cnid: \n" + ExpressionManager.getCnid(expression));
 
             expressionUuidTextField.setText(expression.getUuid().toString());
 
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (NoSuchAlgorithmException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (PropertyVetoException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (SAXException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (ParserConfigurationException ex) {
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        TreeItem rootItem = TreeHelper.makeTreeItems(expression);
+                        TreeView<ExpressionComponentBI> tv = ExpressionTree.trees.get(0);
+                        tv.setCellFactory(new Callback<TreeView<ExpressionComponentBI>, TreeCell<ExpressionComponentBI>>() {
+
+                            @Override
+                            public ExpressionTreeCell call(TreeView<ExpressionComponentBI> list) {
+                                return new ExpressionTreeCell();
+                            }
+                        });
+                        ExpressionTree.trees.get(0).setRoot(rootItem);
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            });
+
+        } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
     }//GEN-LAST:event_makeExpressionButtonActionPerformed
-
-    private void checkExpressionTableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkExpressionTableButtonActionPerformed
-        if (expression != null) {
-            EntityManager em = JpaManager.getEntityManager();
-            try {
-                EntityTransaction entr = em.getTransaction();
-                entr.begin();
-                Expressions expressionObj = new Expressions();
-                expressionObj.setCnid(ExpressionManager.getCnid(expression));
-                expressionObj.setEuuid(expression.getUuid().toString());
-                expressionObj.setExpression(expression.getXml());
-                em.persist(expressionObj);
-                entr.commit();
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            } catch (NoSuchAlgorithmException ex) {
-                Exceptions.printStackTrace(ex);
-            } finally {
-                em.close();
-            }
-        }
-
-    }//GEN-LAST:event_checkExpressionTableButtonActionPerformed
 
     private void checkElIndexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkElIndexActionPerformed
         if (expression != null) {
@@ -369,15 +355,66 @@ public final class ExpressionTopComponent extends TopComponent {
     private void elConceptUuidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elConceptUuidActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_elConceptUuidActionPerformed
+
+    private void updateExpressionTableInfo() {
+        if (expression != null) {
+            EntityManager em = JpaManager.getEntityManager();
+
+            try {
+                Query countEuuidQuery = em.createNamedQuery("Expressions.countEuuid");
+                countEuuidQuery.setParameter("euuid", expression.getUuid().toString());
+                List obs = countEuuidQuery.getResultList();
+                long count = (Long) obs.get(0);
+                if (count > 0) {
+                    inTableText.setText("true");
+                    addToExpressionTableButton.setEnabled(false);
+                } else {
+                    inTableText.setText("false");
+                    addToExpressionTableButton.setEnabled(true);
+                }
+                System.out.println("Count: " + count);
+
+
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+
+    }
+
+    private void addToExpressionTableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToExpressionTableButtonActionPerformed
+        if (expression != null) {
+            EntityManager em = JpaManager.getEntityManager();
+
+            try {
+
+                EntityTransaction entr = em.getTransaction();
+                entr.begin();
+                Expressions expressionObj = new Expressions();
+                expressionObj.setCnid(ExpressionManager.getCnid(expression));
+                expressionObj.setEuuid(expression.getUuid().toString());
+                expressionObj.setExpression(expression.getXml());
+                em.persist(expressionObj);
+                entr.commit();
+
+                updateExpressionTableInfo();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+    }//GEN-LAST:event_addToExpressionTableButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addToExpressionTableButton;
     private javax.swing.JButton checkElIndex;
-    private javax.swing.JButton checkExpressionTableButton;
     private javax.swing.JTextField elConceptNid;
     private javax.swing.JTextField elConceptUuid;
     private javax.swing.JTextArea expressionTextArea;
-    private javax.swing.JTree expressionTree;
     private javax.swing.JTextField expressionUuidTextField;
+    private javax.swing.JTextField inTableText;
     private javafx.embed.swing.JFXPanel jFXPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -385,10 +422,7 @@ public final class ExpressionTopComponent extends TopComponent {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton processButton;
     // End of variables declaration//GEN-END:variables
 
