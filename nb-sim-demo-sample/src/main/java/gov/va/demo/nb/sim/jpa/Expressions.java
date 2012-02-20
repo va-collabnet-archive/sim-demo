@@ -25,6 +25,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Expressions.findByEnid", query = "SELECT e FROM Expressions e WHERE e.enid = :enid"),
     @NamedQuery(name = "Expressions.findByCnid", query = "SELECT e FROM Expressions e WHERE e.cnid = :cnid")})
 public class Expressions implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "discernableEnid")
+    private Collection<PncsLegoMap> pncsLegoMapCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "qualifierEnid")
+    private Collection<PncsLegoMap> pncsLegoMapCollection1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "valueEnid")
+    private Collection<PncsLegoMap> pncsLegoMapCollection2;
     private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "EXPRESSION")
@@ -154,6 +160,33 @@ public class Expressions implements Serializable {
     @Override
     public String toString() {
         return "gov.va.demo.nb.sim.jpa.Expressions[ enid=" + enid + " ]";
+    }
+
+    @XmlTransient
+    public Collection<PncsLegoMap> getPncsLegoMapCollection() {
+        return pncsLegoMapCollection;
+    }
+
+    public void setPncsLegoMapCollection(Collection<PncsLegoMap> pncsLegoMapCollection) {
+        this.pncsLegoMapCollection = pncsLegoMapCollection;
+    }
+
+    @XmlTransient
+    public Collection<PncsLegoMap> getPncsLegoMapCollection1() {
+        return pncsLegoMapCollection1;
+    }
+
+    public void setPncsLegoMapCollection1(Collection<PncsLegoMap> pncsLegoMapCollection1) {
+        this.pncsLegoMapCollection1 = pncsLegoMapCollection1;
+    }
+
+    @XmlTransient
+    public Collection<PncsLegoMap> getPncsLegoMapCollection2() {
+        return pncsLegoMapCollection2;
+    }
+
+    public void setPncsLegoMapCollection2(Collection<PncsLegoMap> pncsLegoMapCollection2) {
+        this.pncsLegoMapCollection2 = pncsLegoMapCollection2;
     }
     
 }

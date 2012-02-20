@@ -26,6 +26,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Persons.findByFirstname", query = "SELECT p FROM Persons p WHERE p.firstname = :firstname"),
     @NamedQuery(name = "Persons.findByDob", query = "SELECT p FROM Persons p WHERE p.dob = :dob")})
 public class Persons implements Serializable {
+    @Basic(optional = false)
+    @Column(name = "DOB")
+    @Temporal(TemporalType.DATE)
+    private Date dob;
     private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "PUUID")
@@ -41,10 +45,6 @@ public class Persons implements Serializable {
     @Basic(optional = false)
     @Column(name = "FIRSTNAME")
     private String firstname;
-    @Basic(optional = false)
-    @Column(name = "DOB")
-    @Temporal(TemporalType.DATE)
-    private Date dob;
     @OneToMany(mappedBy = "providernid")
     private Collection<Documents> documentsCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientnid")
@@ -97,14 +97,6 @@ public class Persons implements Serializable {
         this.firstname = firstname;
     }
 
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
     @XmlTransient
     public Collection<Documents> getDocumentsCollection() {
         return documentsCollection;
@@ -146,6 +138,14 @@ public class Persons implements Serializable {
     @Override
     public String toString() {
         return "gov.va.demo.nb.sim.jpa.Persons[ pnid=" + pnid + " ]";
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
     
 }

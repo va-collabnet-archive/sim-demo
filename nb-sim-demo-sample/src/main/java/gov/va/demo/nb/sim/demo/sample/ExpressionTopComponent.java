@@ -121,7 +121,10 @@ public final class ExpressionTopComponent extends TopComponent {
         initComponents();
         setName(Bundle.CTL_ExpressionTopComponent());
         setToolTipText(Bundle.HINT_ExpressionTopComponent());
-        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
 
         Platform.runLater(new Runnable() {
 

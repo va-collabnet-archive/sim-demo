@@ -7,6 +7,7 @@
     <class>gov.va.demo.nb.sim.jpa.Documents</class>
     <class>gov.va.demo.nb.sim.jpa.Assertions</class>
     <class>gov.va.demo.nb.sim.jpa.Persons</class>
+    <class>gov.va.demo.nb.sim.jpa.PncsLegoMap</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/edd-store"/>
       <property name="javax.persistence.jdbc.password" value="imhere"/>

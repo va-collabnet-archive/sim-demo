@@ -9,7 +9,6 @@ package gov.va.demo.expression;
 import gov.va.demo.terminology.TerminologyService;
 import gov.va.sim.act.expression.ExpressionRelBI;
 import gov.va.sim.impl.expression.Expression;
-import gov.va.sim.impl.expression.ExpressionRel;
 import gov.va.sim.impl.expression.node.ConceptNode;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -20,7 +19,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import org.ihtsdo.lang.LANG_CODE;
-import org.ihtsdo.tk.api.ContradictionException;
 import org.ihtsdo.tk.api.blueprint.ConceptCB;
 import org.ihtsdo.tk.api.blueprint.InvalidCAB;
 import org.ihtsdo.tk.api.blueprint.RelCAB;

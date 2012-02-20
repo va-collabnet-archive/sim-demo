@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Intervals.findByIuuid", query = "SELECT i FROM Intervals i WHERE i.iuuid = :iuuid"),
     @NamedQuery(name = "Intervals.findByInid", query = "SELECT i FROM Intervals i WHERE i.inid = :inid")})
 public class Intervals implements Serializable {
-    private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "ISTART")
     @Temporal(TemporalType.DATE)
@@ -34,6 +33,7 @@ public class Intervals implements Serializable {
     @Column(name = "IEND")
     @Temporal(TemporalType.DATE)
     private Date iend;
+    private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "IUUID")
     private String iuuid;
@@ -59,22 +59,6 @@ public class Intervals implements Serializable {
         this.istart = istart;
         this.iend = iend;
         this.iuuid = iuuid;
-    }
-
-    public Date getIstart() {
-        return istart;
-    }
-
-    public void setIstart(Date istart) {
-        this.istart = istart;
-    }
-
-    public Date getIend() {
-        return iend;
-    }
-
-    public void setIend(Date iend) {
-        this.iend = iend;
     }
 
     public String getIuuid() {
@@ -134,6 +118,22 @@ public class Intervals implements Serializable {
     @Override
     public String toString() {
         return "gov.va.demo.nb.sim.jpa.Intervals[ inid=" + inid + " ]";
+    }
+
+    public Date getIstart() {
+        return istart;
+    }
+
+    public void setIstart(Date istart) {
+        this.istart = istart;
+    }
+
+    public Date getIend() {
+        return iend;
+    }
+
+    public void setIend(Date iend) {
+        this.iend = iend;
     }
     
 }
