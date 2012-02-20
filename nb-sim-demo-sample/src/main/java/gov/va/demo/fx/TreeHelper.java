@@ -16,23 +16,26 @@ import javafx.scene.control.TreeItem;
  * @author kec
  */
 public class TreeHelper {
-    public static TreeItem<ExpressionComponentBI> makeTreeItems(ExpressionBI expression) throws IOException {
+    public static TreeItem<ExpressionComponentBI> makeTreeItems(ExpressionBI expression, boolean expanded) throws IOException {
         ExpressionNodeBI focus = expression.getFocus();
         TreeItem<ExpressionComponentBI> root = new TreeItem<ExpressionComponentBI>(focus);
-        addChildren(root);
+        root.setExpanded(expanded);
+        addChildren(root, expanded);
         
         
         return root;
     } 
     
-    private static void addChildren(TreeItem<ExpressionComponentBI> parentItem) throws IOException {
+    private static void addChildren(TreeItem<ExpressionComponentBI> parentItem, boolean expanded) throws IOException {
         ExpressionNodeBI parentExpNode = (ExpressionNodeBI) parentItem.getValue();
         for (ExpressionRelBI rel: parentExpNode.getAllRels()) {
             TreeItem<ExpressionComponentBI> relItem = new TreeItem<ExpressionComponentBI>(rel);
             parentItem.getChildren().add(relItem);
             TreeItem<ExpressionComponentBI> destItem = new TreeItem<ExpressionComponentBI>(rel.getDestination());
             relItem.getChildren().add(destItem);
-            addChildren(destItem);
+            relItem.setExpanded(expanded);
+            destItem.setExpanded(expanded);
+            addChildren(destItem, expanded);
         }
     }
 }
