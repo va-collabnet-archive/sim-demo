@@ -46,11 +46,9 @@ public class DomExpressionAdapter {
             TreeWalker expressionWalker = ((DocumentTraversal) assertionDoc).createTreeWalker(domNode, whatToShow, null,
                 entityReferenceExpansion);
             Expression exp = convertToExpression(expressionWalker);
-            //System.out.println("Exp: " + exp);
             expressionList.add(exp);
             domNode = walker.nextNode();
         }
-        //System.out.println("Expression list: " + expressionList.size() + " " + expressionList);
         return expressionList;
     }
 

@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Expressions.findAll", query = "SELECT e FROM Expressions e"),
     @NamedQuery(name = "Expressions.findByExpression", query = "SELECT e FROM Expressions e WHERE e.expression = :expression"),
     @NamedQuery(name = "Expressions.findByEuuid", query = "SELECT e FROM Expressions e WHERE e.euuid = :euuid"),
+    @NamedQuery(name = "Expressions.findEnidFromEuuid", query = "SELECT e.enid FROM Expressions e WHERE e.euuid = :euuid"),
     @NamedQuery(name = "Expressions.countEuuid", query = "SELECT count(e) FROM Expressions e WHERE e.euuid = :euuid"),
     @NamedQuery(name = "Expressions.findByEnid", query = "SELECT e FROM Expressions e WHERE e.enid = :enid"),
     @NamedQuery(name = "Expressions.findByCnid", query = "SELECT e FROM Expressions e WHERE e.cnid = :cnid")})
