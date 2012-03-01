@@ -12,11 +12,11 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import org.openide.util.Exceptions;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,26 +47,56 @@ public class PncsLegoMapGenerator {
         EntityTransaction entr = null;
         while (domNode != null) {
             if (domNode.getNodeName().equals("pncs")) {
-                pncsValue = domNode.getAttributes().getNamedItem("value").getNodeValue();
+                if (domNode.getAttributes().getNamedItem("value") != null) {
+                    pncsValue = domNode.getAttributes().getNamedItem("value").getNodeValue();
+                } else {
+                    pncsValue = "null";
+                }
                 pncsId = Integer.parseInt(domNode.getAttributes().getNamedItem("id").getNodeValue());
             } else if (domNode.getNodeName().equals("discernable")) {
                 entr = em.getTransaction();
+                if (entr.isActive()) {
+                    entr.rollback();
+                }
                 entr.begin();
                 map = new PncsLegoMap();
                 map.setPncsId(pncsId);
                 map.setPncsValue(pncsValue);
-                Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
-                map.setDiscernableEnid(dbExpression);
+                try {
+                    Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
+                    map.setDiscernableEnid(dbExpression);
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
+                    map = null;
+                }
             } else if (domNode.getNodeName().equals("qualifier")) {
-                Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
-                map.setQualifierEnid(dbExpression);
+                if (map != null) {
+                    Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
+                    map.setQualifierEnid(dbExpression);
+                }
             } else if (domNode.getNodeName().equals("value")) {
-                Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
-                map.setValueEnid(dbExpression);
-                em.persist(map);
-                entr.commit();
-                map = null;
-            } 
+                if (map != null) {
+                    Expressions dbExpression = processExpression(assertionDoc, domNode, whatToShow, entityReferenceExpansion);
+                    map.setValueEnid(dbExpression);
+
+                    Query countPncsIdPncsValueQuery = em.createNamedQuery("PncsLegoMap.countPncsIdPncsValue");
+                    countPncsIdPncsValueQuery.setParameter("pncsValue", map.getPncsValue());
+                    countPncsIdPncsValueQuery.setParameter("pncsId", map.getPncsId());
+                    List obs = countPncsIdPncsValueQuery.getResultList();
+                    long count = (Long) obs.get(0);
+                    if (count == 0) {
+                        em.persist(map);
+                        entr.commit();
+                        System.out.println("wrote map: " + map);
+                    } else {
+                        entr.rollback();
+                        System.out.println("  dup map: " + map);
+                    }
+                    map = null;
+                } else {
+                    entr.rollback();
+                }
+            }
             domNode = walker.nextNode();
         }
     }

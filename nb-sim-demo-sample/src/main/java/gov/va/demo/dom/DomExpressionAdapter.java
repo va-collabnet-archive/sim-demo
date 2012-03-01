@@ -27,6 +27,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class DomExpressionAdapter {
 
-    public static List<Expression> convertToExpressionList(Document assertionDoc) throws IOException, PropertyVetoException {
+    public static List<Expression> convertToExpressionList(Document assertionDoc) {
         ArrayList<Expression> expressionList = new ArrayList<Expression>();
         int whatToShow = NodeFilter.SHOW_ELEMENT;
         NodeFilter filter = new ExpressionRootNodeFilter();
@@ -45,8 +46,12 @@ public class DomExpressionAdapter {
         while (domNode != null) {
             TreeWalker expressionWalker = ((DocumentTraversal) assertionDoc).createTreeWalker(domNode, whatToShow, null,
                 entityReferenceExpansion);
-            Expression exp = convertToExpression(expressionWalker);
-            expressionList.add(exp);
+            try {
+                Expression exp = convertToExpression(expressionWalker);
+                expressionList.add(exp);
+            } catch (Exception iOException) {
+                Exceptions.printStackTrace(iOException);
+            }
             domNode = walker.nextNode();
         }
         return expressionList;

@@ -6,8 +6,8 @@ package gov.va.demo.nb.sim.demo.sample;
 
 import gov.va.demo.dom.DomExpressionAdapter;
 import gov.va.demo.expression.ExpressionManager;
-import gov.va.demo.fx.ExpressionTreeCell;
-import gov.va.demo.fx.TreeHelper;
+import gov.va.demo.expression.fx.ExpressionTreeCell;
+import gov.va.demo.expression.fx.ExpressionHelper;
 import gov.va.demo.nb.sim.jpa.Expressions;
 import gov.va.demo.nb.sim.jpa.JpaManager;
 import gov.va.demo.terminology.TerminologyService;
@@ -99,19 +99,25 @@ public final class ExpressionTopComponent extends TopComponent {
             protected void done() {
                 try {
                     get();
-                    if (expressionItr.hasNext()) {
-                        processButton.setEnabled(true);
-                        fileProgressBar.setValue(0);
-                        fileProgressBar.setMaximum(expressionList.size());
-                        fileProgressBar.setIndeterminate(false);
-                        fileProgressBar.setStringPainted(true);
-                        fileProgressBar.setString("0 of " + expressionList.size());
-                    }
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 } catch (ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
+                if (expressionItr.hasNext()) {
+                    processButton.setEnabled(true);
+                    fileProgressBar.setValue(0);
+                    fileProgressBar.setMaximum(expressionList.size());
+                    fileProgressBar.setIndeterminate(false);
+                    fileProgressBar.setStringPainted(true);
+                    fileProgressBar.setString("0 of " + expressionList.size());
+                } else {
+                    processButton.setEnabled(false);
+                    fileProgressBar.setValue(0);
+                    fileProgressBar.setMaximum(0);
+                    fileProgressBar.setIndeterminate(false);
+                    fileProgressBar.setStringPainted(true);
+                    fileProgressBar.setString("0 of " + 0);                }
             }
         };
         w.execute();
@@ -348,7 +354,6 @@ public final class ExpressionTopComponent extends TopComponent {
 
             if (expressionItr != null && expressionItr.hasNext()) {
                 expression = expressionItr.next();
-                expressionUuidTextField.setText(expression.getUuid().toString());
                 fileProgressBar.setValue(fileProgressBar.getValue() + 1);
                 fileProgressBar.setString(fileProgressBar.getValue() + " of " + expressionList.size());
                 addToELIndexButton.setEnabled(false);
@@ -356,6 +361,8 @@ public final class ExpressionTopComponent extends TopComponent {
                 inTableText.setText("");
                 elConceptNid.setText("");
                 elConceptUuid.setText("");
+
+                expressionUuidTextField.setText(expression.getUuid().toString());
                 updateExpressionTableInfo();
                 Integer cnid = ExpressionManager.getCnid(expression);
                 if (cnid != Integer.MIN_VALUE) {
@@ -375,7 +382,7 @@ public final class ExpressionTopComponent extends TopComponent {
                     @Override
                     public void run() {
                         try {
-                            TreeItem rootItem = TreeHelper.makeTreeItems(expression, true);
+                            TreeItem rootItem = ExpressionHelper.makeTreeItems(expression, true);
 
                             expressionTreeView.setCellFactory(new Callback<TreeView<ExpressionComponentBI>, TreeCell<ExpressionComponentBI>>() {
 

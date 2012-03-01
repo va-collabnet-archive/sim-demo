@@ -19,7 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PncsLegoMap.findAll", query = "SELECT p FROM PncsLegoMap p"),
     @NamedQuery(name = "PncsLegoMap.findByMapId", query = "SELECT p FROM PncsLegoMap p WHERE p.mapId = :mapId"),
     @NamedQuery(name = "PncsLegoMap.findByPncsId", query = "SELECT p FROM PncsLegoMap p WHERE p.pncsId = :pncsId"),
-    @NamedQuery(name = "PncsLegoMap.findByPncsValue", query = "SELECT p FROM PncsLegoMap p WHERE p.pncsValue = :pncsValue")})
+    @NamedQuery(name = "PncsLegoMap.findByPncsValue", query = "SELECT p FROM PncsLegoMap p WHERE p.pncsValue = :pncsValue"),
+    @NamedQuery(name = "PncsLegoMap.countPncsIdPncsValue", query = "SELECT count(p) FROM PncsLegoMap p WHERE p.pncsValue = :pncsValue and p.pncsId = :pncsId")})
+
+
 public class PncsLegoMap implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

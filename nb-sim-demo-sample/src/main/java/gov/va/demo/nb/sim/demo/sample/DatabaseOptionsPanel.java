@@ -21,13 +21,12 @@ import org.openide.util.NbPreferences;
 final class DatabaseOptionsPanel extends javax.swing.JPanel {
 
     private final DatabaseOptionsOptionsPanelController controller;
-    private static JFXPanel fxPanel;
 
     DatabaseOptionsPanel(DatabaseOptionsOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
-        fxPanel = new JFXPanel();
         // TODO listen to changes in form fields and call controller.changed()
+        System.out.println("Started DatabaseOptionsPanel");
     }
 
     /**
@@ -132,7 +131,6 @@ final class DatabaseOptionsPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void selectBdbLocationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectBdbLocationButtonActionPerformed
-        if (fxPanel != null) {
 
 
             Platform.runLater(new Runnable() {
@@ -155,7 +153,7 @@ final class DatabaseOptionsPanel extends javax.swing.JPanel {
                     }
                 }
             });
-        }
+        
     }//GEN-LAST:event_selectBdbLocationButtonActionPerformed
 
     private void bdbLocationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bdbLocationTextFieldActionPerformed
@@ -163,7 +161,7 @@ final class DatabaseOptionsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_bdbLocationTextFieldActionPerformed
 
     private void selectBaselineFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectBaselineFilesActionPerformed
-        if (fxPanel != null) {
+       
 
             Platform.runLater(new Runnable() {
 
@@ -187,7 +185,7 @@ final class DatabaseOptionsPanel extends javax.swing.JPanel {
                     }
                 }
             });
-        }
+        
     }//GEN-LAST:event_selectBaselineFilesActionPerformed
 
     private void rebuildButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rebuildButtonActionPerformed

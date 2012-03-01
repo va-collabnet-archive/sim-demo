@@ -28,7 +28,8 @@ public class TerminologyService {
 
     private TerminologyService() throws IOException {
       ts      = Lookup.getDefault().lookup(TerminologyStoreDI.class);
-      ViewCoordinate        vc      = ts.getMetadataVC();
+      ViewCoordinate        vc      = new ViewCoordinate(ts.getMetadataVC());
+      vc.getIsaTypeNids().add(Snomed.IS_A.getLenient().getConceptNid());
       
       PathBI path = ts.getPath(Snomed.SNOMED_RELEASE_PATH.getLenient().getConceptNid());
       Position position = new Position(Long.MAX_VALUE, path);
