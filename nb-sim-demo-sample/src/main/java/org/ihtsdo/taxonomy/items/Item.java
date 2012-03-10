@@ -74,6 +74,7 @@ public abstract class Item implements ConceptContainerBI, Comparable<Item> {
 
    public abstract boolean childrenAreSet();
 
+   public abstract void clearChildren();
    @Override
    public int compareTo(Item o) {
       if (this.nodeId == o.nodeId) {

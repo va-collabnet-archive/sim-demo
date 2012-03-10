@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -110,9 +111,40 @@ public class ItemFactory {
    }
 
    public void collapseNode(Item node) {
-      throw new UnsupportedOperationException();
+      CollapseHandler collapser = new CollapseHandler(node);
+      FutureHelper.addFuture(childFinderExecutors.submit(collapser));
    }
 
+       private class CollapseHandler implements Callable<Void> {
+        
+        Item collapsingNode;
+
+        //~--- constructors -----------------------------------------------------
+        public CollapseHandler(Item collapsingNode) {
+            this.collapsingNode = collapsingNode;
+        }
+
+        //~--- methods ----------------------------------------------------------
+ 
+        @Override
+        public Void call() throws Exception {
+            Item latestCollapsingNode = model.nodeStore.get(collapsingNode.nodeId);
+            
+            if (latestCollapsingNode == null) {
+                latestCollapsingNode = collapsingNode;
+            }
+            
+            for (Long nodeId : latestCollapsingNode.getChildrenNodeIds()) {
+                Item childNode = model.nodeStore.get(nodeId);
+                
+                if ((childNode != null) && !childNode.getChildrenNodeIds().isEmpty()) {
+                    removeDescendents(childNode);
+                }
+            }
+            collapsingNode.clearChildren();
+            return null;
+        }
+    }
    public void makeChildNodes(TaxonomyItemWrapper parentItemWrapper) {
       Item parentNode = parentItemWrapper.getValue();
 
@@ -340,7 +372,7 @@ public class ItemFactory {
    private class ItemComparator implements Comparator<TaxonomyItemWrapper> {
       @Override
       public int compare(TaxonomyItemWrapper o1, TaxonomyItemWrapper o2) {
-         return itemIdComparator.compare(o1.getValue().nodeId, o1.getValue().nodeId);
+         return itemIdComparator.compare(o1.getValue().nodeId, o2.getValue().nodeId);
       }
    }
 

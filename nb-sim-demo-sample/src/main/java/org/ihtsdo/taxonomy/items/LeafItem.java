@@ -45,6 +45,11 @@ public class LeafItem extends Item {
       return empty;
    }
 
+    @Override
+    public void clearChildren() {
+       // nothing to do...
+    }
+
    @Override
    public Collection<Long> getExtraParents() {
       return empty;

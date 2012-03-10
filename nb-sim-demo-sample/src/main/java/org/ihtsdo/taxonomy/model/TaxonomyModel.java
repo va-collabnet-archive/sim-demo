@@ -7,7 +7,12 @@ package org.ihtsdo.taxonomy.model;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import javafx.event.EventHandler;
+
+import javafx.scene.control.TreeItem;
+
 import org.ihtsdo.taxonomy.ItemStore;
+import org.ihtsdo.taxonomy.items.*;
 import org.ihtsdo.taxonomy.items.Item;
 import org.ihtsdo.taxonomy.items.LeafItem;
 import org.ihtsdo.taxonomy.items.RootItem;
@@ -22,11 +27,6 @@ import org.openide.util.Exceptions;
 import java.io.IOException;
 
 import java.util.Iterator;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.scene.control.TreeItem;
-import org.ihtsdo.taxonomy.items.*;
 
 /**
  *
@@ -42,6 +42,7 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
    private Iterator<Long>          childItr;
    private Item                    lastParentNode;
    protected ItemFactory           nodeFactory;
+   private TaxonomyItemSetup       renderer;
    private TaxonomyItemWrapper     rootNode;
    protected TerminologySnapshotDI ts;
 
@@ -50,11 +51,12 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
    public TaxonomyModel(TerminologySnapshotDI ts, NidListBI roots, TaxonomyItemSetup renderer,
                         ChildItemFilterBI childNodeFilter)
            throws IOException, Exception {
-      this.ts     = ts;
+      this.ts                 = ts;
       TaxonomyModel.singleton = this;
-      nodeFactory = new ItemFactory(this, renderer, childNodeFilter);
-      rootNode    = new TaxonomyItemWrapper(new RootItem(nodeFactory.getNodeComparator()), this);
+      nodeFactory             = new ItemFactory(this, renderer, childNodeFilter);
+      rootNode                = new TaxonomyItemWrapper(new RootItem(nodeFactory.getNodeComparator()), this);
       nodeStore.add(rootNode.getValue());
+      this.renderer = renderer;
 
       for (int cnid : roots.getListArray()) {
          Item child = nodeFactory.makeNode(cnid, rootNode.getValue());
@@ -69,16 +71,21 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
       rootNode.addEventHandler(TaxonomyItemWrapper.<Item>branchExpandedEvent(), this);
    }
 
-    @Override
-    public void handle(TreeItem.TreeModificationEvent<Item> t) {
-        TaxonomyItemWrapper item = (TaxonomyItemWrapper) t.getTreeItem();
-        if (t.wasCollapsed()) {
-            t.consume();
-        } else if (t.wasExpanded()) {
-            getNodeFactory().makeChildNodes(item);
-            t.consume();
-        }
-    }
+   //~--- methods -------------------------------------------------------------
+
+   @Override
+   public void handle(TreeItem.TreeModificationEvent<Item> t) {
+      TaxonomyItemWrapper item = (TaxonomyItemWrapper) t.getTreeItem();
+
+      if (t.wasCollapsed()) {
+         nodeFactory.collapseNode(item.getValue());
+         item.getChildren().clear();
+         t.consume();
+      } else if (t.wasExpanded()) {
+         getNodeFactory().makeChildNodes(item);
+         t.consume();
+      }
+   }
 
    //~--- get methods ---------------------------------------------------------
 
@@ -216,6 +223,10 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
       }
 
       return retNodes;
+   }
+
+   public TaxonomyItemSetup getRenderer() {
+      return renderer;
    }
 
    public TaxonomyItemWrapper getRoot() {

@@ -15,8 +15,8 @@ public enum Icons {
     
         PRIMITIVE_SINGLE_PARENT(setupImage("/fugue/16x16/icons-shadowless/navigation-nowhere-button-white.png")),
         PRIMITIVE_MULTI_PARENT_CLOSED(setupImage("/fugue/16x16/icons-shadowless/navigation-090-button-white.png")),
-        PRIMITIVE_MULTI_PARENT_OPEN(setupImage("/fugue/16x16/icons-shadowless/shortcut.png")),
-        DEFINED_SINGLE_PARENT(setupImage("/fugue/16x16/icons-shadowless/navigation-nowhere.png")),
+        PRIMITIVE_MULTI_PARENT_OPEN(setupImage("/fugue/16x16/icons-shadowless/navigation-045-button-white.png")),
+        DEFINED_SINGLE_PARENT(setupImage("/fugue/16x16/icons-shadowless/navigation-nowhere-2.png")),
         DEFINED_MULTI_PARENT_CLOSED(setupImage("/fugue/16x16/icons-shadowless/navigation-090.png")),
         DEFINED_MULTI_PARENT_OPEN(setupImage("/fugue/16x16/icons-shadowless/navigation-045.png")),
         ROOT(setupImage("/fugue/16x16/icons-shadowless/node.png")),
@@ -24,6 +24,8 @@ public enum Icons {
         GREEN_TICK(setupImage("/fugue/16x16/icons-shadowless/tick.png")),
         RED_X(setupImage("/fugue/16x16/icons-shadowless/cross.png")),
  
+        TAXONOMY_OPEN(setupImage("/fugue/16x16/icons-shadowless/plus-small.png")),
+        TAXONOMY_CLOSE(setupImage("/fugue/16x16/icons-shadowless/minus-small.png")),
         
         
         ;

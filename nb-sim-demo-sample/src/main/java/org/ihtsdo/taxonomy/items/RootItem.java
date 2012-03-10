@@ -53,6 +53,12 @@ public class RootItem extends Item {
       throw new UnsupportedOperationException("Not supported.");
    }
 
+    @Override
+    public void clearChildren() {
+      nidNodeIdMap.clear();
+      childrenNodeIds.clear();
+    }
+
    @Override
    public boolean childrenAreSet() {
       return true;
