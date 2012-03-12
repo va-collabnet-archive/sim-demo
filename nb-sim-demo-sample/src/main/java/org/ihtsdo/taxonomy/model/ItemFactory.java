@@ -42,7 +42,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -112,39 +111,10 @@ public class ItemFactory {
 
    public void collapseNode(Item node) {
       CollapseHandler collapser = new CollapseHandler(node);
+
       FutureHelper.addFuture(childFinderExecutors.submit(collapser));
    }
 
-       private class CollapseHandler implements Callable<Void> {
-        
-        Item collapsingNode;
-
-        //~--- constructors -----------------------------------------------------
-        public CollapseHandler(Item collapsingNode) {
-            this.collapsingNode = collapsingNode;
-        }
-
-        //~--- methods ----------------------------------------------------------
- 
-        @Override
-        public Void call() throws Exception {
-            Item latestCollapsingNode = model.nodeStore.get(collapsingNode.nodeId);
-            
-            if (latestCollapsingNode == null) {
-                latestCollapsingNode = collapsingNode;
-            }
-            
-            for (Long nodeId : latestCollapsingNode.getChildrenNodeIds()) {
-                Item childNode = model.nodeStore.get(nodeId);
-                
-                if ((childNode != null) && !childNode.getChildrenNodeIds().isEmpty()) {
-                    removeDescendents(childNode);
-                }
-            }
-            collapsingNode.clearChildren();
-            return null;
-        }
-    }
    public void makeChildNodes(TaxonomyItemWrapper parentItemWrapper) {
       Item parentNode = parentItemWrapper.getValue();
 
@@ -283,14 +253,14 @@ public class ItemFactory {
       NidBitSetBI               dataSet;
       ConceptVersionBI          parent;
       Item                      parentNode;
-      MakeChildNodesTask                    task;
+      MakeChildNodesTask        task;
 
       //~--- constructors -----------------------------------------------------
 
       public ChildFinder(ConceptVersionBI parent, Item parentNode, MakeChildNodesTask task,
                          ChildItemFilterBI childFilter)
               throws IOException {
-         this.task      = task;
+         this.task        = task;
          this.parent      = parent;
          this.parentNode  = parentNode;
          this.dataSet     = model.ts.getEmptyNidSet();
@@ -369,6 +339,40 @@ public class ItemFactory {
    }
 
 
+   private class CollapseHandler implements Callable<Void> {
+      Item collapsingNode;
+
+      //~--- constructors -----------------------------------------------------
+
+      public CollapseHandler(Item collapsingNode) {
+         this.collapsingNode = collapsingNode;
+      }
+
+      //~--- methods ----------------------------------------------------------
+
+      @Override
+      public Void call() throws Exception {
+         Item latestCollapsingNode = model.nodeStore.get(collapsingNode.nodeId);
+
+         if (latestCollapsingNode == null) {
+            latestCollapsingNode = collapsingNode;
+         }
+
+         for (Long nodeId : latestCollapsingNode.getChildrenNodeIds()) {
+            Item childNode = model.nodeStore.get(nodeId);
+
+            if ((childNode != null) &&!childNode.getChildrenNodeIds().isEmpty()) {
+               removeDescendents(childNode);
+            }
+         }
+
+         collapsingNode.clearChildren();
+
+         return null;
+      }
+   }
+
+
    private class ItemComparator implements Comparator<TaxonomyItemWrapper> {
       @Override
       public int compare(TaxonomyItemWrapper o1, TaxonomyItemWrapper o2) {
@@ -405,7 +409,7 @@ public class ItemFactory {
             Item                           childNode      = dataFinder.childNodes.take();
 
             while (childNode.getNodeId() != parentItem.nodeId) {
-               nodesToPublish.add(new TaxonomyItemWrapper(childNode, model));
+               nodesToPublish.add(new TaxonomyItemWrapper(childNode));
                childNode = dataFinder.childNodes.take();
             }
 
@@ -433,15 +437,13 @@ public class ItemFactory {
          continueWork = false;
       }
 
+      public boolean continueWork() {
+         return continueWork;
+      }
+
       @Override
       protected void failed() {
          continueWork = false;
-      }
-
-      //~--- get methods ------------------------------------------------------
-
-      public boolean continueWork() {
-         return continueWork;
       }
    }
 }

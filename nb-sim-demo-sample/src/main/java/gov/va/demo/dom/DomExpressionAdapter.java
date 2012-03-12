@@ -45,12 +45,16 @@ public class DomExpressionAdapter {
         Node domNode = walker.nextNode();
         while (domNode != null) {
             TreeWalker expressionWalker = ((DocumentTraversal) assertionDoc).createTreeWalker(domNode, whatToShow, null,
-                entityReferenceExpansion);
+                    entityReferenceExpansion);
+            String nodeString = expressionWalker.getCurrentNode().getParentNode().getParentNode().toString();
+            nodeString = nodeString + expressionWalker.getCurrentNode().getParentNode().toString();
+            nodeString = nodeString + expressionWalker.getCurrentNode().toString();
+            nodeString = nodeString + expressionWalker.toString();
             try {
                 Expression exp = convertToExpression(expressionWalker);
                 expressionList.add(exp);
             } catch (Exception iOException) {
-                Exceptions.printStackTrace(iOException);
+                Exceptions.printStackTrace(new Exception("Processing: " + nodeString, iOException));
             }
             domNode = walker.nextNode();
         }
@@ -112,13 +116,23 @@ public class DomExpressionAdapter {
         // traverse children:
         for (Node destinationDomNode = walker.firstChild(); destinationDomNode != null;
                 destinationDomNode = walker.nextSibling()) {
-            String sctId = destinationDomNode.getAttributes().getNamedItem("sctid").getNodeValue();
-            ConceptVersionBI descCv = tSnap.getConceptVersionFromAlternateId(sctId);
-            ConceptNode destNode = new ConceptNode();
 
-            destNode.setValue(descCv);
-            origin.addRel(typeCv, destNode);
-            traverseRelTypeLevel(tSnap, walker, level + 1, destNode);
+            if (destinationDomNode.getAttributes().getNamedItem("sctid") != null) {
+
+                String sctId = destinationDomNode.getAttributes().getNamedItem("sctid").getNodeValue();
+
+                ConceptVersionBI descCv = tSnap.getConceptVersionFromAlternateId(sctId);
+                if (descCv != null) {
+                    ConceptNode destNode = new ConceptNode();
+                    destNode.setValue(descCv);
+                    origin.addRel(typeCv, destNode);
+                    traverseRelTypeLevel(tSnap, walker, level + 1, destNode);
+                } else {
+                    System.out.println("No concept for id: " + sctId);
+                }
+            } else {
+                System.out.println("No sctid in node: " + destinationDomNode);
+            }
         }
 
         // return position to the current (level up):

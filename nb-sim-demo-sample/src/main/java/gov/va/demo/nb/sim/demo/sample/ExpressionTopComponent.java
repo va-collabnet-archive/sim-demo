@@ -6,8 +6,8 @@ package gov.va.demo.nb.sim.demo.sample;
 
 import gov.va.demo.dom.DomExpressionAdapter;
 import gov.va.demo.expression.ExpressionManager;
-import gov.va.demo.expression.fx.ExpressionTreeCell;
-import gov.va.demo.expression.fx.ExpressionHelper;
+import gov.va.demo.fx.expression.ExpressionTreeCell;
+import gov.va.demo.fx.expression.ExpressionHelper;
 import gov.va.demo.nb.sim.jpa.Expressions;
 import gov.va.demo.nb.sim.jpa.JpaManager;
 import gov.va.demo.terminology.TerminologyService;
@@ -41,7 +41,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.swing.SwingWorker;
-import org.ihtsdo.concept.ConceptVersion;
 import org.ihtsdo.tk.api.blueprint.ConceptCB;
 import org.ihtsdo.tk.api.blueprint.InvalidCAB;
 import org.ihtsdo.tk.api.concept.ConceptVersionBI;

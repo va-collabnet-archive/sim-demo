@@ -4,26 +4,22 @@
  */
 package gov.va.demo.taxonomy;
 
-import gov.va.demo.terminology.TerminologyService;
-import java.io.IOException;
+import gov.va.demo.fx.concept.ConceptNodeScene;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.ihtsdo.taxonomy.items.Item;
 import org.ihtsdo.taxonomy.model.ItemFactory;
-import org.ihtsdo.tk.api.coordinate.EditCoordinate;
-import org.ihtsdo.tk.api.coordinate.ViewCoordinate;
+import org.ihtsdo.taxonomy.model.TaxonomyModel;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -51,7 +47,7 @@ preferredID = "TaxonomyTopComponent")
     "CTL_TaxonomyTopComponent=Taxonomy Window",
     "HINT_TaxonomyTopComponent=This is a Taxonomy window"
 })
-public final class TaxonomyTopComponent extends TopComponent implements ChangeListener<TaxonomyStartupTask> {
+public final class TaxonomyTopComponent extends TopComponent implements ChangeListener<TaxonomyModel> {
 
     public TaxonomyTopComponent() {
         initComponents();
@@ -67,10 +63,9 @@ public final class TaxonomyTopComponent extends TopComponent implements ChangeLi
                     URL resource = getClass().getResource("/gov/va/demo/taxonomy/TaxonomyScene.fxml");
                     FXMLLoader loader = new FXMLLoader(resource);
                     Parent root = (Parent) loader.load();
-                    TaxonomyScene taxonomyScene = (TaxonomyScene) loader.getController();
+                    taxonomyScene = (TaxonomyScene) loader.getController();
                     taxonomyTree = taxonomyScene.getTreeView();
-                    TreeItem<String> topItem = new TreeItem<String>("TOP");
-                    topItem.getChildren().add(new TreeItem<String>("bottom"));
+                    TreeItem<String> topItem = new TreeItem<String>("");
                     taxonomyTree.setRoot(topItem);
                     Scene s = new Scene(root);
                     jFXPanel1.setScene(s);
@@ -83,9 +78,10 @@ public final class TaxonomyTopComponent extends TopComponent implements ChangeLi
 
     }
     TreeView taxonomyTree;
+    TaxonomyScene taxonomyScene;
 
     @Override
-    public void changed(ObservableValue<? extends TaxonomyStartupTask> ov, TaxonomyStartupTask t, TaxonomyStartupTask t1) {
+    public void changed(ObservableValue<? extends TaxonomyModel> ov, TaxonomyModel t, TaxonomyModel t1) {
         taxonomyTree.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
 
             @Override
@@ -94,8 +90,18 @@ public final class TaxonomyTopComponent extends TopComponent implements ChangeLi
             }
         });
         taxonomyTree.setShowRoot(false);
-        taxonomyTree.setRoot(t1.treeRoot);
+        taxonomyTree.setRoot(t1.getRoot());
         ov.removeListener(this);
+
+        taxonomyTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                taxonomyScene.getConceptVBox().getChildren().add(new ConceptNodeScene(taxonomyTree));
+            }
+            
+        });
     }
 
     /**

@@ -7,7 +7,6 @@ package gov.va.sim.demo;
 import gov.va.demo.dom.PncsLegoMapGenerator;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.stage.FileChooser;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -24,7 +22,6 @@ import org.openide.awt.ActionID;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 @ActionID(category = "Edit",
 id = "gov.va.sim.demo.ProcessMappingFile")

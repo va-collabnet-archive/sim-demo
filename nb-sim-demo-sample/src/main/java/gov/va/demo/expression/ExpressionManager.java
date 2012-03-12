@@ -41,13 +41,20 @@ public class ExpressionManager {
         // existing concept in db. Just return it's nid.
         if (expression.getFocus().getAllRels().length == 0) {
             ConceptNode cn = (ConceptNode) expression.getFocus();
-
+            if (cn.getValue() == null) {
+                return Integer.MIN_VALUE;
+            }
             return cn.getValue().getNid();
         }
 
-        if (TerminologyService.getStore().hasUuid(expression.getUuid())) {
-            return TerminologyService.getStore().getNidForUuids(expression.getUuid());
-        }
+        try {
+            if (TerminologyService.getStore().hasUuid(expression.getUuid())) {
+                return TerminologyService.getStore().getNidForUuids(expression.getUuid());
+            }
+        } catch (NullPointerException ex) {
+            System.out.println("Error fetching nid for: " + expression);
+            return Integer.MIN_VALUE;
+        } 
         return Integer.MIN_VALUE;
     }
 

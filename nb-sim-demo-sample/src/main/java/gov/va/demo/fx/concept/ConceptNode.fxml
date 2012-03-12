@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" 
+            xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="gov.va.demo.fx.concept.ConceptNode">
+    <children>
+        <TitledPane text="concept" expanded="false" fx:id="attributesPane"
+                                    prefWidth="500">
+            <style>
+                -fx-background-color: #99CCFF;
+                -fx-text-fill: white;
+            </style>
+            <content>
+                <VBox spacing="2" fillWidth="true">
+                    <children>
+                        <TitledPane text="definition" expanded="false" fx:id="definitionPane"
+                                                    prefWidth="500">
+                            <content>
+                                <Label text="test" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane text="descriptions" expanded="false" fx:id="descriptionsPane"
+                                                    prefWidth="500">
+                            <content>
+                                <Label text="test" />
+                            </content>
+                        </TitledPane>
+                    </children>
+                </VBox>
+            </content>
+        </TitledPane>
+    </children>
+</AnchorPane>

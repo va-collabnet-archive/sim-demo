@@ -33,7 +33,6 @@ import java.util.Iterator;
  * @author kec
  */
 public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEvent<Item>> {
-   public static TaxonomyModel singleton;
 
    //~--- fields --------------------------------------------------------------
 
@@ -43,7 +42,7 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
    private Item                    lastParentNode;
    protected ItemFactory           nodeFactory;
    private TaxonomyItemSetup       renderer;
-   private TaxonomyItemWrapper     rootNode;
+   private TaxonomyRootItemWrapper     rootNode;
    protected TerminologySnapshotDI ts;
 
    //~--- constructors --------------------------------------------------------
@@ -52,9 +51,8 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
                         ChildItemFilterBI childNodeFilter)
            throws IOException, Exception {
       this.ts                 = ts;
-      TaxonomyModel.singleton = this;
       nodeFactory             = new ItemFactory(this, renderer, childNodeFilter);
-      rootNode                = new TaxonomyItemWrapper(new RootItem(nodeFactory.getNodeComparator()), this);
+      rootNode                = new TaxonomyRootItemWrapper(new RootItem(nodeFactory.getNodeComparator()), this);
       nodeStore.add(rootNode.getValue());
       this.renderer = renderer;
 
@@ -63,7 +61,7 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
 
          renderer.setupTaxonomyNode(child, ts.getConceptForNid(cnid));
          rootNode.getValue().addChild(child);
-         rootNode.getChildren().add(new TaxonomyItemWrapper(child, this));
+         rootNode.getChildren().add(new TaxonomyItemWrapper(child));
       }
 
       rootNode.getValue().setText("root");
@@ -229,7 +227,7 @@ public class TaxonomyModel implements EventHandler<TreeItem.TreeModificationEven
       return renderer;
    }
 
-   public TaxonomyItemWrapper getRoot() {
+   public TaxonomyRootItemWrapper getRoot() {
       return rootNode;
    }
 

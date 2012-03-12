@@ -12,10 +12,7 @@ import javafx.event.EventHandler;
 
 import javafx.geometry.Orientation;
 
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TreeCell;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -23,6 +20,7 @@ import javafx.scene.layout.FlowPane;
 
 import org.ihtsdo.taxonomy.items.Item;
 import org.ihtsdo.taxonomy.items.TaxonomyItemWrapper;
+import org.ihtsdo.taxonomy.items.TaxonomyRootItemWrapper;
 import org.ihtsdo.taxonomy.model.TaxonomyModel;
 import org.ihtsdo.tk.api.concept.ConceptVersionBI;
 import org.openide.util.Exceptions;
@@ -38,7 +36,7 @@ public class TaxonomyTreeCell extends TreeCell<Item> {
         super.updateItem(t, empty);
 
         if (t != null) {
-            final TaxonomyItemWrapper treeItem = (TaxonomyItemWrapper) getTreeItem();
+            final TreeItem<Item> treeItem = getTreeItem();
             Item item = treeItem.getValue();
 
             if (treeItem.isExpanded()) {
@@ -71,7 +69,10 @@ public class TaxonomyTreeCell extends TreeCell<Item> {
                             p1.setPrefSize(16, 16);
                             setDisclosureNode(p1);
                             try {
-                                openOrCloseParent(TaxonomyModel.singleton, treeItem);
+                                if (getTreeView() != null) {
+                                    TaxonomyRootItemWrapper root = (TaxonomyRootItemWrapper) getTreeView().getRoot();
+                                    openOrCloseParent(root.getModel(), (TaxonomyItemWrapper) treeItem);
+                                }
                             } catch (IOException ex) {
                                 Exceptions.printStackTrace(ex);
                             }
