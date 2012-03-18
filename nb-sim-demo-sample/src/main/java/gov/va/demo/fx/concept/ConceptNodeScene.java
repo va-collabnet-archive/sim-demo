@@ -15,7 +15,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import org.ihtsdo.taxonomy.items.Item;
 import org.ihtsdo.taxonomy.items.TaxonomyItemWrapper;
 import org.ihtsdo.taxonomy.items.TaxonomyRootItemWrapper;
@@ -72,7 +78,11 @@ public class ConceptNodeScene extends Parent implements ChangeListener<TaxonomyI
                 
                 
                 VBox relVBox = new VBox(4);
+                GridPane definitionPane = new GridPane();
                 List<Node> relLabels = new ArrayList<Node>();
+                
+                int row = 0;
+                
                 for (RelationshipVersionBI rv: cv.getRelsOutgoingActive()) {
                     ConceptVersionBI relType = ts.getConceptVersion(rv.getTypeNid());
                     ConceptVersionBI relTarget = ts.getConceptVersion(rv.getDestinationNid());
@@ -80,7 +90,37 @@ public class ConceptNodeScene extends Parent implements ChangeListener<TaxonomyI
                             relTarget.getPreferredDescription().getText());
                     relLabel.setWrapText(true);
                     relLabels.add(relLabel);
+                    GridPane relGrid = new GridPane();
+                    definitionPane.add(relGrid, 0, row);
+                    // arrow b4 group
+                    Polyline arrowB4Group = new Polyline(0,8,8,8);
+                    arrowB4Group.minWidth(16);
+                    arrowB4Group.minHeight(16);
+                    relGrid.add(arrowB4Group, 0, 0);
+                    // group
+                    Circle circle1 = new Circle(11, Color.RED);
+                    relGrid.add(circle1, 1, 0);
+                    // arrow b4 type
+                    Polyline arrowB4Type = new Polyline(0,8,8,8);
+                    arrowB4Type.minWidth(16);
+                    arrowB4Type.minHeight(16);
+                    relGrid.add(arrowB4Type, 2, 0);
+                    // type
+                    Rectangle type = new Rectangle(60,21);
+                    type.setArcWidth(20);
+                    type.setArcHeight(20);
+                    relGrid.add(type, 3, 0);
+                    // arrow b4 destination
+                    Polyline arrowB4Dest = new Polyline(0,8,8,8);
+                    arrowB4Dest.minWidth(16);
+                    arrowB4Dest.minHeight(16);
+                    relGrid.add(arrowB4Dest, 4, 0);
+                    // destination
+                    Rectangle destination = new Rectangle(60,21);
+                    relGrid.add(destination, 5, 0);
+                    row++;
                 }
+                relLabels.add(definitionPane);
                 relVBox.getChildren().setAll(relLabels);
                 conceptNode.getDefinitionPane().setContent(relVBox);
             } catch (ContradictionException ex) {
