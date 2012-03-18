@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>gov.va.demo</groupId>
@@ -15,8 +15,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.run.params.ide>-J-Djava.library.path="C:\Program Files\Oracle\JavaFX 2.1 Runtime\bin" -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
-        <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
     </properties>
 
     <dependencies>
@@ -80,6 +78,51 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>fx-on-w7</id>
+            <activation>
+                <os>
+                    <name>Windows 7</name>
+                </os>
+            </activation>
+            <properties>
+                <netbeans.run.params.ide>-J-Djava.library.path="C:\Program Files\Oracle\JavaFX 2.1 Runtime\bin" -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
+                <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
+            </properties>
+        </profile>
+        <profile>
+            <id>fx-on-OSX</id>
+            <activation>
+                <os>
+                    <name>Mac OS X</name>
+                </os>
+            </activation>
+<!--                    
+            note: if changing platforms, also make sure that the following setting: 
+            
+            <netbeans.hint.jdkPlatform>JDK_1.7_FX_2.1.1</netbeans.hint.jdkPlatform>
+            
+            in nb-configuration.xml files. Note that the platform is changed when selecting: 
+            
+            right-click-on-project->properties->build->compile
+            
+            Also have to make sure that the nb-sim-demo-sample dependency
+            
+        <dependency>
+            <groupId>javafx</groupId>
+            <artifactId>javafxrt</artifactId>
+            <version>2-1.1.0-beta</version>
+        </dependency>
+
+            version matches...
+-->
+
+            <properties>
+                <netbeans.run.params.ide>-J-Djava.library.path=/Library/Java/javafx-sdk2-1.1.0-beta/rt/lib -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
+<!--            <netbeans.run.params.ide>-J-Djava.library.path=/Library/Java/javafx-sdk2.1.0-beta/rt/lib -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>-->
+                <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
+            </properties>
+        </profile>
         <profile>
             <id>deployment</id>
             <build>

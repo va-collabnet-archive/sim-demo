@@ -13,7 +13,7 @@
         <ToolBar>
             <Region styleClass="spacer" />
             <HBox styleClass="segmented-button-bar">
-                <Button styleClass="first" > 
+                <Button fx:id="resetRootButton" styleClass="first" onAction="#resetRoot"> 
                     <graphic>
                         <ImageView> 
                             <image>
