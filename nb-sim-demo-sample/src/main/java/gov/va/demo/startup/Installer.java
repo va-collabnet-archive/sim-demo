@@ -4,24 +4,27 @@
  */
 package gov.va.demo.startup;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
+import java.util.prefs.Preferences;
 import javafx.concurrent.Task;
 import javafx.embed.swing.JFXPanel;
+import javafx.stage.DirectoryChooser;
 import org.ihtsdo.tk.api.TerminologyStoreDI;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 
 /**
  *
  * @author kec
  */
 public class Installer extends ModuleInstall {
-    
-    public static CountDownLatch dbReadyLatch = new CountDownLatch(1);
 
+    public static CountDownLatch dbReadyLatch = new CountDownLatch(1);
     private static JFXPanel fxPanel;
 
     @Override
@@ -42,20 +45,30 @@ public class Installer extends ModuleInstall {
 
             @Override
             protected Void call() throws Exception {
-                ProgressHandle p = ProgressHandleFactory.createHandle("Loading database..."); 
+                ProgressHandle p = ProgressHandleFactory.createHandle("Loading database...");
                 p.setDisplayName("BDB Load");
                 p.start();
                 p.switchToIndeterminate();
+                Preferences node = NbPreferences.forModule(TerminologyStoreDI.class);
+                String bdbLoc = node.get(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), "unset");
+                if (bdbLoc.equalsIgnoreCase("unset")) {
+                    DirectoryChooser dc = new DirectoryChooser();
+                    dc.setTitle("Select Berkeley DB directory:");
+//                    File defaultDirectory = new File("c:/dev/javafx");
+//                    dc.setInitialDirectory(defaultDirectory);
+                    File selectedDirectory = dc.showDialog(null);
+                    node.put(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), selectedDirectory.getAbsolutePath());
+                }
                 TerminologyStoreDI ts = Lookup.getDefault().lookup(TerminologyStoreDI.class);
-                p.finish();   
+                p.finish();
                 System.out.println("BDB Load complete. ");
-                StatusDisplayer.getDefault().setStatusText("BDB Load complete."); 
+                StatusDisplayer.getDefault().setStatusText("BDB Load complete.");
                 dbReadyLatch.countDown();
                 return null;
             }
         };
         new Thread(loadDbTask).start();
-        
+
         super.restored();
     }
 
@@ -70,5 +83,4 @@ public class Installer extends ModuleInstall {
         super.validate();
         fxPanel = new JFXPanel();
     }
-    
 }
