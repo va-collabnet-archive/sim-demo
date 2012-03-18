@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.run.params.ide>-J-Djava.library.path=/Library/Java/javafx-sdk2.1.0-beta/rt/bin -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
+        <netbeans.run.params.ide>-J-Djava.library.path="C:\Program Files\Oracle\JavaFX 2.1 Runtime\bin" -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
     </properties>
 
