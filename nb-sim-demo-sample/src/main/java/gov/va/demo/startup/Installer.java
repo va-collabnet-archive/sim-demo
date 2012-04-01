@@ -51,10 +51,13 @@ public class Installer extends ModuleInstall {
                 p.switchToIndeterminate();
                 Preferences node = NbPreferences.forModule(TerminologyStoreDI.class);
                 String bdbLoc = node.get(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), "unset");
-                File fallBack = new File("/Users/kec/NetBeansProjects/nb-sim-demo/application/berkeley-db");
+                File fallBackOsX = new File("/Users/kec/NetBeansProjects/nb-sim-demo/application/berkeley-db");
+                File fallBackWin7 = new File("C:\\Users\\kec\\Documents\\NetBeansProjects\\nb-sim-demo\\application\\berkeley-db");
                 if (bdbLoc.equalsIgnoreCase("unset")) {
-                    if (fallBack.exists()) {
-                        node.put(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), fallBack.getAbsolutePath());
+                    if (fallBackOsX.exists()) {
+                        node.put(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), fallBackOsX.getAbsolutePath());
+                    } else if (fallBackWin7.exists()) {
+                        node.put(TerminologyStoreDI.DatabaseOptionPreferences.DB_LOCATION.name(), fallBackWin7.getAbsolutePath());
                     } else {
                         DirectoryChooser dc = new DirectoryChooser();
                         dc.setTitle("Select Berkeley DB directory:");
