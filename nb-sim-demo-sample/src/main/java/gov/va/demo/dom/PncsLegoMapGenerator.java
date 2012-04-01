@@ -112,9 +112,11 @@ public class PncsLegoMapGenerator {
                 Query countEuuidQuery = em.createNamedQuery("Expressions.findByEuuid");
                 countEuuidQuery.setParameter("euuid", exp.getUuid().toString());
                 List obs = countEuuidQuery.getResultList();
-                Expressions dbExpression = (Expressions) obs.get(0);
+                if (!obs.isEmpty()) {
+                    Expressions dbExpression = (Expressions) obs.get(0);
+                    return dbExpression;
+                }
 
-                return dbExpression;
             }
         }
         throw new IOException("No expression found: " + domNode);

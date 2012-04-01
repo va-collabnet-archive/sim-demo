@@ -160,7 +160,10 @@ public final class ExpressionTopComponent extends TopComponent {
             Query countEuuidQuery = em.createNamedQuery("Expressions.countEuuid");
             countEuuidQuery.setParameter("euuid", expression.getUuid().toString());
             List obs = countEuuidQuery.getResultList();
-            long count = (Long) obs.get(0);
+            long count = 0;
+            if (!obs.isEmpty()) {
+                count = (Long) obs.get(0);
+            }
             if (count > 0) {
                 inTable = true;
                 inTableText.setText("true");

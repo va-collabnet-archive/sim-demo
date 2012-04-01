@@ -39,6 +39,8 @@ public class ConceptNode implements Initializable {
       attributesPane.setText("This is a special concept...");
       definitionPane.setContent(new Label("definition"));
       descriptionsPane.setContent(new Label("descriptions"));
+      
+      
    }
 
    //~--- get methods ---------------------------------------------------------

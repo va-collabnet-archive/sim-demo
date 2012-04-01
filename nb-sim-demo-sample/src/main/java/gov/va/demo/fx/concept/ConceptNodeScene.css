@@ -1,0 +1,91 @@
+/* 
+    Document   : ConceptNodeScene
+    Created on : Mar 18, 2012, 3:16:42 PM
+    Author     : kec
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.defining-role {
+    -fx-fill: #DFB951;
+    -fx-stroke: black;
+}
+
+.defining {
+    -fx-fill: #DFB951;
+    -fx-stroke: black;
+}
+
+.primitive-concept {
+    -fx-fill: #99CCFF;
+    -fx-arc-width: 0;
+    -fx-arc-hidght: 0;
+    -fx-stroke: black;
+    
+}
+
+.primitive-concept-stack {
+    -fx-background-color: white;
+    -fx-border-color: red;
+    -fx-border-insets: 0;
+    -fx-padding: 1;
+    -fx-border-radius: 0;
+    -fx-stroke: black;
+    
+}
+
+.defined-concept {
+    -fx-fill: #CCCCFF;
+    -fx-arc-width: 0;
+    -fx-arc-height: 0;
+    -fx-stroke: black;
+}
+
+.defined-concept-stack {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-insets: 0;
+    -fx-padding: 1;
+    -fx-border-radius: 0;
+    -fx-stroke: black;
+}
+
+.defining-role {
+    -fx-fill: #FFFFCC;
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+    -fx-stroke: black;
+}
+
+.defining-role-stack {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    
+    -fx-border-color: black;
+    -fx-border-insets: 0;
+    -fx-padding: 1;
+
+    -fx-border-radius: 5;
+    -fx-stroke: black;
+}
+
+.supplementary-role {
+    -fx-fill: #CCCC99;
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+    -fx-stroke: black;
+}
+
+.supplementary-role-stack {
+    -fx-background-color: white;
+    -fx-border-color: red;
+    -fx-border-insets: 5;
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+    -fx-stroke: black;
+}
+
+.role-group {
+    -fx-fill: white;
+    -fx-stroke: black;
+}
