@@ -34,6 +34,18 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <plugin>
+                <!-- NetBeans 6.9+ requires JDK 6 -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -47,20 +59,10 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <!-- NetBeans 6.9+ requires JDK 6 -->
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
                 </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-            </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -68,8 +70,8 @@
     <modules>
         <module>branding</module>
         <module>application</module>
-    <module>nb-sim-demo-sample</module>
-  </modules>
+        <module>nb-sim-demo-sample</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE71</netbeans.version>

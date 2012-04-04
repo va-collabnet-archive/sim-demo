@@ -25,15 +25,57 @@ import org.w3c.dom.traversal.TreeWalker;
 import java.beans.PropertyVetoException;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.openide.util.Exceptions;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author kec
  */
 public class DomExpressionAdapter {
+
+    public static Expression convertToExpression(String expression) throws ParserConfigurationException, SAXException, IOException {
+
+        StringBuilder docBuilder = new StringBuilder("<doc><objective><assertion><discernable>");
+
+        docBuilder.append(expression);
+        docBuilder.append("</discernable></assertion></objective></doc>");
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document assertionDoc = builder.parse(new InputSource(new StringReader(docBuilder.toString())));
+
+        int whatToShow = NodeFilter.SHOW_ELEMENT;
+        NodeFilter filter = new ExpressionRootNodeFilter();
+        boolean entityReferenceExpansion = false;
+        TreeWalker walker = ((DocumentTraversal) assertionDoc).createTreeWalker(assertionDoc, whatToShow, filter,
+                entityReferenceExpansion);
+        Node domNode = walker.nextNode();
+        while (domNode != null) {
+            TreeWalker expressionWalker = ((DocumentTraversal) assertionDoc).createTreeWalker(domNode, whatToShow, null,
+                    entityReferenceExpansion);
+            String nodeString = expressionWalker.getCurrentNode().getParentNode().getParentNode().toString();
+            nodeString = nodeString + expressionWalker.getCurrentNode().getParentNode().toString();
+            nodeString = nodeString + expressionWalker.getCurrentNode().toString();
+            nodeString = nodeString + expressionWalker.toString();
+            try {
+                Expression exp = convertToExpression(expressionWalker);
+                return exp;
+            } catch (Exception iOException) {
+                Exceptions.printStackTrace(new Exception("Processing: " + nodeString, iOException));
+            }
+            domNode = walker.nextNode();
+        }
+        return null;
+    }
 
     public static List<Expression> convertToExpressionList(Document assertionDoc) {
         ArrayList<Expression> expressionList = new ArrayList<Expression>();
@@ -83,8 +125,14 @@ public class DomExpressionAdapter {
     public static Expression convertToExpression(TreeWalker expressionWalker) throws IOException, PropertyVetoException {
         Node node = expressionWalker.getCurrentNode();
         Expression exp = new Expression();
-        String sctId = node.getAttributes().getNamedItem("sctid").getNodeValue();
-        ConceptVersionBI cv = TerminologyService.getSnapshot().getConceptVersionFromAlternateId(sctId);
+        ConceptVersionBI cv;
+        if (node.getAttributes().getNamedItem("sctid") != null) {
+            String sctId = node.getAttributes().getNamedItem("sctid").getNodeValue();
+            cv = TerminologyService.getSnapshot().getConceptVersionFromAlternateId(sctId);
+        } else {
+            String uuid = node.getAttributes().getNamedItem("uuid").getNodeValue();
+            cv = TerminologyService.getSnapshot().getConceptVersion(UUID.fromString(uuid));
+        }
         ConceptNode expNode = new ConceptNode();
 
         expNode.setValue(cv);
@@ -92,20 +140,6 @@ public class DomExpressionAdapter {
         traverseRelTypeLevel(TerminologyService.getSnapshot(), expressionWalker, 0, expNode);
 
         return exp;
-    }
-
-    private static Node describeCurrentNode(TreeWalker walker, int level) throws DOMException {
-
-        // describe current node:
-        Node parent = walker.getCurrentNode();
-
-        for (int i = 0; i < level; i++) {
-            System.out.print("    ");
-        }
-
-        System.out.println("- " + parent.getAttributes().getNamedItem("sctid").getNodeValue());
-
-        return parent;
     }
 
     private static void traverseRelDestLevel(TerminologySnapshotDI tSnap, TreeWalker walker, int level,
@@ -116,23 +150,23 @@ public class DomExpressionAdapter {
         // traverse children:
         for (Node destinationDomNode = walker.firstChild(); destinationDomNode != null;
                 destinationDomNode = walker.nextSibling()) {
-
+            ConceptVersionBI descCv;
+            
             if (destinationDomNode.getAttributes().getNamedItem("sctid") != null) {
 
                 String sctId = destinationDomNode.getAttributes().getNamedItem("sctid").getNodeValue();
 
-                ConceptVersionBI descCv = tSnap.getConceptVersionFromAlternateId(sctId);
+                descCv = tSnap.getConceptVersionFromAlternateId(sctId);
+            } else {
+                String uuid = destinationDomNode.getAttributes().getNamedItem("uuid").getNodeValue();
+                descCv = TerminologyService.getSnapshot().getConceptVersion(UUID.fromString(uuid));
+            }
                 if (descCv != null) {
                     ConceptNode destNode = new ConceptNode();
                     destNode.setValue(descCv);
                     origin.addRel(typeCv, destNode);
                     traverseRelTypeLevel(tSnap, walker, level + 1, destNode);
-                } else {
-                    System.out.println("No concept for id: " + sctId);
                 }
-            } else {
-                System.out.println("No sctid in node: " + destinationDomNode);
-            }
         }
 
         // return position to the current (level up):
@@ -146,9 +180,15 @@ public class DomExpressionAdapter {
 
         // traverse children:
         for (Node typeDomNode = walker.firstChild(); typeDomNode != null; typeDomNode = walker.nextSibling()) {
-            String sctId = typeDomNode.getAttributes().getNamedItem("sctid").getNodeValue();
-            ConceptVersionBI typeCv = tSnap.getConceptVersionFromAlternateId(sctId);
-
+            ConceptVersionBI typeCv;
+            if (typeDomNode.getAttributes().getNamedItem("sctid") != null) {
+                String sctId = typeDomNode.getAttributes().getNamedItem("sctid").getNodeValue();
+                typeCv = tSnap.getConceptVersionFromAlternateId(sctId);
+            } else {
+                String uuid = typeDomNode.getAttributes().getNamedItem("typeUuid").getNodeValue();
+                typeCv = TerminologyService.getSnapshot().getConceptVersion(UUID.fromString(uuid));
+            }
+ 
             traverseRelDestLevel(tSnap, walker, level + 1, expNode, typeCv);
         }
 

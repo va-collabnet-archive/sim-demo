@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Assertions.findAll", query = "SELECT a FROM Assertions a"),
     @NamedQuery(name = "Assertions.findByAuuid", query = "SELECT a FROM Assertions a WHERE a.auuid = :auuid"),
+    @NamedQuery(name = "Assertions.findByDnid", query = "SELECT a FROM Assertions a WHERE a.dnid = :dnid ORDER BY a.seqInDoc"),
     @NamedQuery(name = "Assertions.findBySeqInDoc", query = "SELECT a FROM Assertions a WHERE a.seqInDoc = :seqInDoc")})
 public class Assertions implements Serializable {
     private static final long serialVersionUID = 1L;

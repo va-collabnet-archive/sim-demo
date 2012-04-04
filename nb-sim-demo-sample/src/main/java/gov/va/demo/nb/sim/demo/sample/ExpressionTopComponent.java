@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -74,6 +75,7 @@ public final class ExpressionTopComponent extends TopComponent {
     private File assertionDefFile;
     private Document assertionDoc;
     private TreeView expressionTreeView;
+    private JFXPanel jFxPanel;
 
     public File getAssertionDefFile() {
         return assertionDefFile;
@@ -143,7 +145,8 @@ public final class ExpressionTopComponent extends TopComponent {
                     expressionTreeView = expTree.getTreeView();
 
                     Scene s = new Scene(root);
-                    jFXPanel1.setScene(s);
+                    jFxPanel = (JFXPanel) javaFXPanel1.getJFXPanel();
+                    jFxPanel.setScene(s);
                 } catch (Exception e) {
                     Exceptions.printStackTrace(e);
                 }
@@ -196,9 +199,9 @@ public final class ExpressionTopComponent extends TopComponent {
         elConceptUuid = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         addToExpressionTableButton = new javax.swing.JButton();
-        jFXPanel1 = new javafx.embed.swing.JFXPanel();
         fileProgressBar = new javax.swing.JProgressBar();
         addToELIndexButton = new javax.swing.JButton();
+        javaFXPanel1 = new gov.va.demo.fx.document.JavaFxPanel();
 
         setBackground(javax.swing.UIManager.getDefaults().getColor("Tree.textBackground"));
 
@@ -254,21 +257,6 @@ public final class ExpressionTopComponent extends TopComponent {
             }
         });
 
-        jFXPanel1.setBackground(new java.awt.Color(255, 255, 0));
-        jFXPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jFXPanel1.setMinimumSize(new java.awt.Dimension(257, 166));
-
-        javax.swing.GroupLayout jFXPanel1Layout = new javax.swing.GroupLayout(jFXPanel1);
-        jFXPanel1.setLayout(jFXPanel1Layout);
-        jFXPanel1Layout.setHorizontalGroup(
-            jFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jFXPanel1Layout.setVerticalGroup(
-            jFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 164, Short.MAX_VALUE)
-        );
-
         fileProgressBar.setIndeterminate(true);
 
         org.openide.awt.Mnemonics.setLocalizedText(addToELIndexButton, org.openide.util.NbBundle.getMessage(ExpressionTopComponent.class, "ExpressionTopComponent.addToELIndexButton.text")); // NOI18N
@@ -279,15 +267,26 @@ public final class ExpressionTopComponent extends TopComponent {
             }
         });
 
+        javax.swing.GroupLayout javaFXPanel1Layout = new javax.swing.GroupLayout(javaFXPanel1);
+        javaFXPanel1.setLayout(javaFXPanel1Layout);
+        javaFXPanel1Layout.setHorizontalGroup(
+            javaFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 553, Short.MAX_VALUE)
+        );
+        javaFXPanel1Layout.setVerticalGroup(
+            javaFXPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 160, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jFXPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(javaFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(fileProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                             .addGap(5, 5, 5)
@@ -314,8 +313,8 @@ public final class ExpressionTopComponent extends TopComponent {
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(elConceptNid)))
                                     .addGap(0, 0, Short.MAX_VALUE)))))
-                    .addComponent(processButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(addToELIndexButton, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(processButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addToELIndexButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(173, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -326,8 +325,8 @@ public final class ExpressionTopComponent extends TopComponent {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(processButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(javaFXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(expressionUuidTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -491,11 +490,11 @@ public final class ExpressionTopComponent extends TopComponent {
     private javax.swing.JTextField expressionUuidTextField;
     private javax.swing.JProgressBar fileProgressBar;
     private javax.swing.JTextField inTableText;
-    private javafx.embed.swing.JFXPanel jFXPanel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private gov.va.demo.fx.document.JavaFxPanel javaFXPanel1;
     private javax.swing.JButton processButton;
     // End of variables declaration//GEN-END:variables
 

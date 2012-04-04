@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+
+<BorderPane minWidth="800" maxWidth="1000" prefWidth="1000"
+                fx:controller="gov.va.demo.fx.document.DocumentNodeFXML" 
+                xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <ToolBar>
+            <Region styleClass="spacer" />
+            <HBox styleClass="segmented-button-bar">
+                <Button text="4" styleClass="last" />
+                <Separator/>
+            </HBox>
+        </ToolBar>    
+    </top>
+    <center>
+        <SplitPane  fx:id="splitPane" 
+                        orientation="VERTICAL" maxWidth="2000" prefWidth="1000">
+            <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <TableView id="tableView" fx:id="tableView" maxWidth="2000" prefWidth="1000">
+                    <columns>
+                        <TableColumn fx:id="patientTC" text="Patient" maxWidth="2000" prefWidth="500" resizable="true">
+                            <columns>
+                                <TableColumn fx:id="patientFirstTC" text="first"  resizable="true" prefWidth="200"/>
+                                <TableColumn fx:id="patientLastTC" text="last"  resizable="true" prefWidth="200"/>
+                                <TableColumn fx:id="patientDobTC" text="dob"  resizable="true" prefWidth="200"/>
+                            </columns>                               
+                        </TableColumn>
+                        <TableColumn fx:id="authorTC" text="Author" maxWidth="2000" prefWidth="500"  resizable="true">
+                            <columns>
+                                <TableColumn fx:id="authorLastTC" text="last"  resizable="true" prefWidth="200"/>
+                                <TableColumn fx:id="authorFirstTC" text="first"  resizable="true" prefWidth="200"/>
+                            </columns>                               
+                        </TableColumn>
+                        <TableColumn fx:id="docDateTC" text="Date" maxWidth="1000" prefWidth="150"  resizable="true"/>
+                    </columns>
+                </TableView>            
+            </ScrollPane>
+            <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <WebView fx:id="documentView"/>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>
