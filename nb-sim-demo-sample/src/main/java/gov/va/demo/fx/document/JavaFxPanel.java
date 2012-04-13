@@ -5,11 +5,8 @@
 package gov.va.demo.fx.document;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.lang.Class;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.openide.util.Exceptions;
@@ -28,7 +25,7 @@ public class JavaFxPanel extends JPanel {
             try {
                 Class c = Class.forName("javafx.embed.swing.JFXPanel");
                 jFxPanel = (JComponent) c.newInstance();
-                jFxPanel.setPreferredSize(new Dimension(1500, 1500));
+                jFxPanel.setPreferredSize(new Dimension(800, 300));
                 setLayout(new BorderLayout());
                 add(jFxPanel, BorderLayout.CENTER);
 

@@ -14,7 +14,7 @@ import javafx.geometry.Orientation;
 
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
@@ -30,6 +30,47 @@ import org.openide.util.Exceptions;
  * @author kec
  */
 public class TaxonomyTreeCell extends TreeCell<Item> {
+
+    private class DragStartListener implements EventHandler<MouseEvent> {
+
+        @Override
+        public void handle(MouseEvent event) {
+                /* drag was detected, start a drag-and-drop gesture*/
+                /* allow any transfer mode */
+                Dragboard db = startDragAndDrop(TransferMode.ANY);
+
+                /* Put a string on a dragboard */
+                ClipboardContent content = new ClipboardContent();
+                content.putString(getText());
+                db.setContent(content);
+
+                event.consume();
+                System.out.println("Starting drag for: " + db.getString());
+       }
+        
+    }
+    
+     private class DragDoneListener implements EventHandler<DragEvent> {
+
+        @Override
+        public void handle(DragEvent event) {
+                 /* the drag-and-drop gesture ended */
+                System.out.println("onDragDone");
+                /* if the data was successfully moved, clear it */
+                if (event.getTransferMode() == TransferMode.MOVE) {
+                    //source.setText("");
+                }
+                
+                event.consume();
+       }
+        
+    }
+   
+    
+    public TaxonomyTreeCell() {
+        setOnDragDetected(new DragStartListener());
+        setOnDragDone(new DragDoneListener());
+    }
 
     @Override
     protected void updateItem(Item t, boolean empty) {
@@ -62,7 +103,6 @@ public class TaxonomyTreeCell extends TreeCell<Item> {
                 icons = new ImageView[]{t.getIcon().getImageView()};
                 if (item.hasExtraParents()) {
                     icons[0].addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
                         @Override
                         public void handle(MouseEvent e) {
                             ProgressIndicator p1 = new ProgressIndicator();

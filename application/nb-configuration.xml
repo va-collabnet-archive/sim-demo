@@ -19,6 +19,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-apisupport-installer.os-linux>false</org-netbeans-modules-apisupport-installer.os-linux>
         <org-netbeans-modules-apisupport-installer.os-macosx>true</org-netbeans-modules-apisupport-installer.os-macosx>
         <org-netbeans-modules-apisupport-installer.pack200-enabled>true</org-netbeans-modules-apisupport-installer.pack200-enabled>
-        <netbeans.hint.jdkPlatform>JDK_1.6_FX_2-1.1.0-beta</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>Default_JavaFX_Platform</netbeans.hint.jdkPlatform>
     </properties>
 </project-shared-configuration>

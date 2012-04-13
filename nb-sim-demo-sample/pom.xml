@@ -21,7 +21,9 @@
         <dependency>
             <groupId>javafx</groupId>
             <artifactId>javafxrt</artifactId>
-            <version>2-2.1.0-beta</version>
+            <version>2-2.1.0-bundled</version>
+            <scope>system</scope>
+            <systemPath>${fxSystemPath}</systemPath>
         </dependency>
         <dependency>
             <groupId>org.ihtsdo</groupId>

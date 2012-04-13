@@ -8,7 +8,7 @@
             </goals>
             <properties>
                 <jpda.listen>true</jpda.listen>
-                <netbeans.run.params.ide>-J-Xdebug -J-Xrunjdwp:transport=dt_socket,suspend=n,server=n,address=${jpda.address} -J-Djava.library.path="C:\Program Files\Oracle\JavaFX 2.1 Runtime\bin" -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
+                <netbeans.run.params.ide>-J-Xdebug -J-Xrunjdwp:transport=dt_socket,suspend=n,server=n,address=${jpda.address} -J-Djava.library.path="/Library/Java/javafx-sdk2-2.1.0-beta/rt/lib" -J-Xmx4g -J-Xms4g -J-d64 -J-XX:+UseCompressedOops</netbeans.run.params.ide>
             </properties>
         </action>
     </actions>
